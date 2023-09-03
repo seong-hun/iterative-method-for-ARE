@@ -1,13 +1,13 @@
-import numpy as np
-from numpy.linalg import matrix_rank
-from scipy.linalg import block_diag, solve_lyapunov
-import matplotlib.pyplot as plt
-from cycler import cycler
-from loguru import logger
-from tqdm import trange
 import sys
 
 import fym
+import matplotlib.pyplot as plt
+import numpy as np
+from cycler import cycler
+from loguru import logger
+from numpy.linalg import matrix_rank
+from scipy.linalg import block_diag, solve_lyapunov
+from tqdm import trange
 
 logger.remove()
 logger.add(sys.stderr, level="DEBUG")
@@ -89,15 +89,9 @@ class Proposed(Kleinman):
         n, m = self.n, self.m
 
         Ak = self.A - self.B @ K
-        Ab = np.block([
-            [Ak, self.B],
-            [np.zeros((m, n)), -self.s * np.eye(self.m)]
-        ])
+        Ab = np.block([[Ak, self.B], [np.zeros((m, n)), -self.s * np.eye(self.m)]])
 
-        Kb = np.block([
-            [np.eye(n), np.zeros_like(self.B)],
-            [-K, np.eye(m)]
-        ])
+        Kb = np.block([[np.eye(n), np.zeros_like(self.B)], [-K, np.eye(m)]])
         Qb = Kb.T @ block_diag(self.Q, self.R) @ Kb
 
         Hk = solve_lyapunov(Ab.T, -Qb)
@@ -134,28 +128,34 @@ def problem():
     ITERMAX = 500
     KTOL = 1e-10
 
-    A = np.array([
-        [-1.341, 0.9933, 0, -0.1689, -0.2518],
-        [43.223, -0.8693, 0, -17.251, -1.5766],
-        [1.341, 0.0067, 0, 0.1689, 0.2518],
-        [0, 0, 0, -20, 0],
-        [0, 0, 0, 0, -20],
-    ])
-    B = np.array([
-        [0, 0],
-        [0, 0],
-        [0, 0],
-        [20, 0],
-        [0, 20],
-    ])
+    A = np.array(
+        [
+            [-1.341, 0.9933, 0, -0.1689, -0.2518],
+            [43.223, -0.8693, 0, -17.251, -1.5766],
+            [1.341, 0.0067, 0, 0.1689, 0.2518],
+            [0, 0, 0, -20, 0],
+            [0, 0, 0, 0, -20],
+        ]
+    )
+    B = np.array(
+        [
+            [0, 0],
+            [0, 0],
+            [0, 0],
+            [20, 0],
+            [0, 20],
+        ]
+    )
 
     n, m = B.shape
 
     Q = np.eye(n)
     R = np.eye(m)
 
-    logger.info("Eigenvalues of A (real): " + ", ".join(
-        [f"{x:-5.2e}" for x in np.linalg.eigvals(A).real]))
+    logger.info(
+        "Eigenvalues of A (real): "
+        + ", ".join([f"{x:-5.2e}" for x in np.linalg.eigvals(A).real])
+    )
     logger.info("Rank of B: {}/{}", matrix_rank(B), np.min(B.shape))
     logger.info("Rank of C: {}/{}", matrix_rank(ctrb_matrix(A, B)), n)
     logger.info("Rank of O: {}/{}", matrix_rank(ctrb_matrix(A.T, Q)), n)
@@ -170,20 +170,24 @@ def problem():
         #     [1, 1, -1, 1, 1],
         #     [1, 1, -1, 1, 1],
         # ])
-        return inertia(A - B@K)[0] == 5
+        return inertia(A - B @ K)[0] == 5
 
     # for seed in range(1000):
     #     if play(seed):
     #         break
 
     # inertia(A - BK) = (5, 0, 0)
-    K = np.array([
-        [8.4, -5.1, -4.1, -1.1, 0.4],
-        [5.8, -7.4, 3.1, -5.2, -5.1],
-    ])
-    logger.info("Eigenvalues of A_0 (real): " + ", ".join(
-        [f"{x:-5.2e}" for x in np.linalg.eigvals(A - B@K).real]))
-    logger.info("Inertia of A_0 (p, z, n): {}", inertia(A - B@K))
+    K = np.array(
+        [
+            [8.4, -5.1, -4.1, -1.1, 0.4],
+            [5.8, -7.4, 3.1, -5.2, -5.1],
+        ]
+    )
+    logger.info(
+        "Eigenvalues of A_0 (real): "
+        + ", ".join([f"{x:-5.2e}" for x in np.linalg.eigvals(A - B @ K).real])
+    )
+    logger.info("Inertia of A_0 (p, z, n): {}", inertia(A - B @ K))
     return A, B, Q, R, K, ITERMAX, KTOL
 
 
@@ -265,22 +269,24 @@ def plot():
     }
 
     # Plotting
-    plt.rcParams.update({
-        "text.usetex": True,
-        "font.family": "serif",
-        "font.serif": "Times New Roman",
-        "font.size": 10,
-        "axes.labelsize": 10,
-        "axes.grid": True,
-        "axes.linewidth": 0.5,
-        "legend.fontsize": 8,
-        "xtick.labelsize": 8,
-        "ytick.labelsize": 8,
-        "lines.markersize": 3,
-        "lines.linewidth": 1,
-        "grid.linestyle": "--",
-        "grid.alpha": 0.8,
-    })
+    plt.rcParams.update(
+        {
+            "text.usetex": True,
+            "font.family": "serif",
+            "font.serif": "Times New Roman",
+            "font.size": 10,
+            "axes.labelsize": 10,
+            "axes.grid": True,
+            "axes.linewidth": 0.5,
+            "legend.fontsize": 8,
+            "xtick.labelsize": 8,
+            "ytick.labelsize": 8,
+            "lines.markersize": 3,
+            "lines.linewidth": 1,
+            "grid.linestyle": "--",
+            "grid.alpha": 0.8,
+        }
+    )
 
     my_cycler = (
         cycler(color=[plt.cm.get_cmap("Set1").colors[i] for i in [2, 1, 0]])
@@ -304,19 +310,19 @@ def plot():
         print(f"{k}:")
 
         print(f"\tFinal P ({v[0]['i'][-1]}):")
-        for row in v[0]['P'][-1]:
+        for row in v[0]["P"][-1]:
             print("\t" + " & ".join([f"{elem:5.3f}" for elem in row]))
 
         print("\tOptimal P:")
-        for row in v[1]['Popt']:
+        for row in v[1]["Popt"]:
             print("\t" + " & ".join([f"{elem:5.3f}" for elem in row]))
 
         print(f"\tFinal K ({v[0]['i'][-1]}):")
-        for row in v[0]['K'][-1]:
+        for row in v[0]["K"][-1]:
             print("\t" + " & ".join([f"{elem:5.3f}" for elem in row]))
 
         print("\tOptimal K:")
-        for row in v[1]['Kopt']:
+        for row in v[1]["Kopt"]:
             print("\t" + " & ".join([f"{elem:5.3f}" for elem in row]))
 
     ax.set_ylabel(r"$\| P_k - P^\ast \|_F$")
